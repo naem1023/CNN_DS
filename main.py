@@ -125,7 +125,7 @@ def predict_image_sample(model, X_test, y_test, n):
 
         # true, prediction is right
         if y_pred == y_actual and correct_count <= 2:
-            plt.imshow(test_image)
+            plt.imshow(test_image[0])
             plt.show()
 
             print("==right prediction==")
@@ -139,7 +139,7 @@ def predict_image_sample(model, X_test, y_test, n):
 
             correct_count += 1
         elif y_pred != y_actual and wrong_count <= 2:
-            plt.imshow(test_image)
+            plt.imshow(test_image[0])
             plt.show()
 
             print("==wrong prediction==")
@@ -351,19 +351,20 @@ if __name__ == '__main__':
     tf.compat.v1.keras.backend.set_session(session)
 
     # model = make_resnet_model()
-    # model = model.model_resnet()
+    model = model.model_resnet()
+    # model = make_common_model()
 
     # get train and test data
     X_train, X_test, y_train, y_test = get_image()
-    # print("Get all image")
-    # end_time = time.time()
-    # print("read image time = ", end_time - start_time)
+    print("Get all image")
+    end_time = time.time()
+    print("read image time = ", end_time - start_time)
 
     # X_train, X_test, y_train, y_test = read_train_file.read_data()
     # print("Read all image")
 
     # start_time = time.time()
-    # model = train_model(X_train, X_test, y_train, y_test, model)
+    model = train_model(X_train, X_test, y_train, y_test, model)
 
     model = load_model('model-201611263.model')
 

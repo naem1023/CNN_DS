@@ -5,7 +5,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers, initializers, regularizers, metrics
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.layers import BatchNormalization, Conv2D, Activation, Dense, GlobalAveragePooling2D, MaxPooling2D, \
-    ZeroPadding2D, Add
+    ZeroPadding2D, Add, Flatten
 
 import os
 import matplotlib.pyplot as plt
@@ -75,7 +75,7 @@ def conv2_layer(x):
 def conv3_layer(x):
     shortcut = x
 
-    for i in range(4):
+    for i in range(3):
         if (i == 0):
             x = Conv2D(128, (1, 1), strides=(2, 2), padding='valid')(x)
             x = BatchNormalization()(x)
@@ -201,14 +201,56 @@ def conv5_layer(x):
     return x
 
 
-def model_resnet():
-    x = conv1_layer(input_tensor)
-    x = conv2_layer(x)
-    # x = conv3_layer(x)
-    # x = conv4_layer(x)
-    # x = conv5_layer(x)
+def simple_resnet(x):
+    x = input_tensor
+    _x = Conv2D(128, 3, padding='same')(x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
 
-    x = GlobalAveragePooling2D()(x)
+    _x = Conv2D(128, 3, padding='same')(_x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
+
+    x = _x
+
+    _x = Conv2D(128, 3, padding='same')(x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
+
+    _x = Conv2D(128, 3, padding='same')(_x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
+
+    x = x + _x
+    x = MaxPooling2D(2)(x)
+
+    _x = Conv2D(128, 3, padding='same')(x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
+
+    _x = Conv2D(128, 3, padding='same')(_x)
+    _x = BatchNormalization()(_x)
+    _x = Activation('relu')(_x)
+
+    x = x + _x
+    x = MaxPooling2D(2)(x)
+
+    x = Flatten()(x)
+    x = Dense(128)(x)
+    x = Dense(128)(x)
+
+    return x
+def model_resnet():
+    # x = conv1_layer(input_tensor)
+    # x = conv2_layer(x)
+    # x = conv3_layer(x)
+    # # x = conv4_layer(x)
+    # # x = conv5_layer(x)
+    #
+    # x = GlobalAveragePooling2D()(x)
+
+    x = simple_resnet(input_tensor)
+
     output_tensor = Dense(K, activation='softmax')(x)
 
     resnet50 = Model(input_tensor, output_tensor)
